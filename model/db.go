@@ -19,15 +19,17 @@ func InitDb() {
 		utlis.DbHost,
 		utlis.DbPort,
 		utlis.DbName)
-	db, err = gorm.Open(mysql.Open(dsn))
+	db, _ = gorm.Open(mysql.Open(dsn))
 
 	if err != nil {
 		fmt.Printf("Failed to connect to the database. Please check the parameters", err)
 	}
-	sqlDB, err := db.DB()
+	sqlDB, _ := db.DB()
 	if err != nil {
-		print(err)
+		fmt.Printf("sqlDB generated an error", err)
 	}
+
+	db.AutoMigrate(&User{}, &Article{}, &Category{})
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	sqlDB.SetMaxIdleConns(10)
 
