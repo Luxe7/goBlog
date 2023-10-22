@@ -51,6 +51,18 @@ func ScryptPw(password string) string {
 	fpw := base64.StdEncoding.EncodeToString(HashPw)
 	return fpw
 }
+func UpdateUser(id int, data *User) int {
+	//gorm中用struct更新信息，不会更新值为0的参数
+	var user User
+	var maps = make(map[string]interface{})
+	maps["username"] = data.UserName
+	maps["role"] = data.Role
+	err := db.Model(&user).Where("id = ?", id).Updates(maps).Error
+	if err != nil {
+		return errormsg.ERROR
+	}
+	return errormsg.SUCCESS
+}
 func DeleteUser(id int) int {
 	//可以删除不存在的用户并且返回ok，原因未知
 	/*如果数据库中不存在某id的值，这段代码返回的错误值是nil而不是ErrRecordNotFound，

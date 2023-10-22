@@ -60,7 +60,20 @@ func GetUsers(c *gin.Context) {
 
 // Edit User
 func EditUser(c *gin.Context) {
-
+	var data model.User
+	id, _ := strconv.Atoi(c.Param("id")) //为什么这个地方的id是从Param中获得的，不可以使用Data.ID呢
+	_ = c.ShouldBindJSON(&data)
+	code := model.CheckUser(data.UserName)
+	if code == errormsg.ERROR_USERNAME_USED {
+		c.Abort()
+	}
+	if code == errormsg.SUCCESS {
+		model.UpdateUser(id, &data)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errormsg.GetErrMsg(code),
+	})
 }
 
 // Delete User
